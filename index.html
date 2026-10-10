@@ -3,73 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meta R$ 1.000</title>
+<title>META R$ 1.000</title>
 <style>
 *{box-sizing:border-box;font-family:system-ui}
-body{margin:0;background:#f2f2f2;padding:16px}
-.card{background:#103c38;color:#fff;border-radius:24px;padding:20px 18px 16px}
-.card small{letter-spacing:2px;opacity:.8;font-size:11px;font-weight:700}
-.card h1{margin:6px 0 6px;font-size:34px}
-.card p{margin:0 0 12px;opacity:.9}
-.valor{font-size:38px;font-weight:800;margin:10px 0}
+body{margin:0;background:#f2f2f2;padding:14px}
+.cartao{background:#103c38;color:#fff;border-radius:24px;padding:20px 18px 16px}
+.cartao small{letter-spacing:2px;opacity:.8;font-size:11px;font-weight:700}
+.cartao h1{margin:6px 0 12px;font-size:24px}
+.valentia{font-size:38px;font-weight:800;margin:10px 0}
 .bar{height:10px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
-.bar i{display:block;height:100%;background:#7cf2a0;width:0%;transition:.3s}
-.barinfo{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;opacity:.9}
-.box{background:#fff;border-radius:20px;padding:16px;margin-top:14px}
-.box h2{margin:0 0 4px;font-size:18px}
-.box p{margin:0 0 12px;color:#666;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.btn{border:1.5px solid #ddd;border-radius:14px;padding:10px 4px;text-align:center;background:#f7f7f7}
-.btn b{display:block;font-size:16px}
-.btn span{font-size:11px;color:#555}
+.bar i{display:block;height:100%;background:#2eff7a;width:0%;transition:.3s}
+.barinfo{display:flex;justify-content:space-between;font-size:13px;opacity:.9;margin-top:8px}
+.caixa{background:#fff;border-radius:20px;padding:14px;margin-top:14px}
+.caixa h2{margin:0 0 4px;font-size:18px}
+.caixa p{margin:0 0 12px;color:#666;font-size:14px}
+.grade{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.btn{border:1.5px solid #ddd;border-radius:14px;padding:10px 0;text-align:center;font-weight:700;background:#fff;cursor:pointer}
 .btn.ativo{background:#103c38;color:#fff;border-color:#103c38}
-.btn.ativo span{color:#c8ffdb}
 </style>
 </head>
 <body>
-<div class="card">
+<div class="cartao">
 <small>DESAFIO DE ECONOMIA</small>
 <h1>META R$ 1.000</h1>
 <p>Marque cada valor depois de guardar o dinheiro.</p>
-<div class="valor" id="total">R$ 0,00</div>
+<div class="valentia">R$ <span id="total">0,00</span></div>
 <div class="bar"><i id="barra"></i></div>
 <div class="barinfo"><span id="pct">0% concluído</span><span id="falta">Faltam R$ 1.000,00</span></div>
 </div>
-<div class="box">
-<h2>Valores de R$ 1 a R$ 44</h2>
+<div class="caixa">
+<h2>Valores de R$ 1 a R$ 44 + R$ 10</h2>
 <p>Toque em cada valor quando tiver separado essa quantia.</p>
-<div class="grid" id="grid"></div>
+<div class="grade" id="grade"></div>
 </div>
 <script>
-const grid=document.getElementById('grid');
+const grade=document.getElementById('grade');
 const totalEl=document.getElementById('total');
 const barra=document.getElementById('barra');
 const pctEl=document.getElementById('pct');
 const faltaEl=document.getElementById('falta');
 let selecionados=JSON.parse(localStorage.getItem('meta1000')||'[]');
-for(let i=1;i<=44;i++){
-  const d=document.createElement('div');
-  d.className='btn'+(selecionados.includes(i)?' ativo':'');
-  d.innerHTML=`<b>${i}</b><span>R$ ${i},00</span>`;
-  d.onclick=()=>{
-    if(selecionados.includes(i)) selecionados=selecionados.filter(x=>x!==i);
-    else selecionados.push(i);
-    localStorage.setItem('meta1000',JSON.stringify(selecionados));
-    atualizar();
-  };
-  grid.appendChild(d);
+for(let eu=1;eu<=44;eu++){
+ const d=document.createElement('div');
+ d.className='btn'+(selecionados.includes(eu)?' ativo':'');
+ d.innerHTML='<b>'+eu+'</b>';
+ d.onclick=()=>{
+  if(selecionados.includes(eu)) selecionados=selecionados.filter(x=>x!==eu);
+  else selecionados.push(eu);
+  localStorage.setItem('meta1000',JSON.stringify(selecionados));
+  atualizar();
+ };
+ grade.appendChild(d);
 }
+const d10=document.createElement('div');
+d10.className='btn'+(selecionados.includes(10.5)?' ativo':'');
+d10.innerHTML='<b>10</b>';
+d10.onclick=()=>{
+ if(selecionados.includes(10.5)) selecionados=selecionados.filter(x=>x!==10.5);
+ else selecionados.push(10.5);
+ localStorage.setItem('meta1000',JSON.stringify(selecionados));
+ atualizar();
+};
+grade.appendChild(d10);
 function atualizar(){
-  const soma=selecionados.reduce((a,b)=>a+b,0);
-  const pct=Math.round(soma/10);
-  totalEl.textContent='R$ '+soma.toLocaleString('pt-BR',{minimumFractionDigits:2});
-  barra.style.width=pct+'%';
-  pctEl.textContent=pct+'% concluído';
-  faltaEl.textContent='Faltam R$ '+(1000-soma).toLocaleString('pt-BR',{minimumFractionDigits:2});
-  document.querySelectorAll('.btn').forEach((el,idx)=>{
-    const v=idx+1;
-    el.classList.toggle('ativo',selecionados.includes(v));
-  });
+ const soma=selecionados.reduce((um,b)=>um+b,0);
+ const somaReal= Math.floor(soma) + (soma%1!==0?10:0) - (soma%1!==0?0.5:0);
+ const totalCalculado = selecionados.filter(x=>x!==10.5).reduce((a,b)=>a+b,0) + (selecionados.includes(10.5)?10:0);
+ const porcentagem=Math.min(totalCalculado/10,100);
+ totalEl.textContent=totalCalculado.toLocaleString('pt-BR',{minimumFractionDigits:2});
+ barra.style.width=porcentagem+'%';
+ pctEl.textContent=Math.round(porcentagem)+'% concluído';
+ faltaEl.textContent=totalCalculado>=1000?'META BATIDA! 🎉':'Faltam R$ '+(1000-totalCalculado).toLocaleString('pt-BR',{minimumFractionDigits:2});
+ document.querySelectorAll('.btn').forEach((el,idx)=>{
+   const v=idx<44?idx+1:10.5;
+   el.classList.toggle('ativo',selecionados.includes(v));
+ });
 }
 atualizar();
 </script>
